@@ -12,3 +12,22 @@ exports.getArticlesModel = () => {
   `;
   return db.query(SQL).then(({ rows }) => rows);
 };
+
+exports.getArticlesByIdModel = (article_id) => {
+  let SQL = `SELECT * FROM articles 
+  `;
+  return db
+    .query(SQL)
+    .then(({ rows: articleList }) => {
+      if (article_id > articleList.length && article_id <= 2147483647) {
+        return Promise.reject({ status: 404, msg: "Article Not Found" });
+      } else return articleList;
+    })
+    .then(() => {
+      SQL += ` WHERE article_id = $1;`;
+      return db.query(SQL, [article_id]);
+    })
+    .then(({ rows }) => rows[0]);
+
+  // return db.query(SQL, [article_id]);
+};
