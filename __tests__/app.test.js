@@ -135,3 +135,68 @@ describe("5. GET /api/articles/:article_id", () => {
       });
   });
 });
+
+describe.only("6. GET /api/articles/:article_id/comments", () => {
+  it("status:200, should responds with an array of comment objects", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toBeSorted("created_at", { descending: true });
+        comments.forEach((comment) => {
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+
+  it("status:404, should responds with error message when the path is invalid", () => {
+    return request(app)
+      .get("/api/articles/1/commentsssssss")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Route not found");
+      });
+  });
+
+  it("status:400, should responds with error message when article_id is invalid", () => {
+    return request(app)
+      .get("/api/articles/54etr4e/comments")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  it("status:404, should responds with error message when article_id does not exist", () => {
+    return request(app)
+      .get("/api/articles/12345/comments")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Article Not Found");
+      });
+  });
+
+  it("status:400, should responds with error message when article_id is out of range of type integer", () => {
+    return request(app)
+      .get("/api/articles/1234523423432423/comments")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Out Of Range For Type Integer");
+      });
+  });
+});
