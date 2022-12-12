@@ -28,6 +28,4 @@ exports.getArticlesByIdModel = (article_id) => {
       return db.query(SQL, [article_id]);
     })
     .then(({ rows }) => rows[0]);
-
-  // return db.query(SQL, [article_id]);
 };
