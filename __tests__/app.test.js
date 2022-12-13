@@ -97,9 +97,7 @@ describe("5. GET /api/articles/:article_id", () => {
       });
   });
 
-
   it("status:404, should responds with error message when the path is not found", () => {
-
     return request(app)
       .get("/api/articlessss/1")
       .expect(404)
@@ -141,7 +139,7 @@ describe("5. GET /api/articles/:article_id", () => {
 });
 
 describe("6. GET /api/articles/:article_id/comments", () => {
-  it("status:200, should responds with an array of comment objects", () => {
+  it("status:200, should responds with an array of comment objects sorted by most recent comment", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -161,6 +159,16 @@ describe("6. GET /api/articles/:article_id/comments", () => {
             })
           );
         });
+      });
+  });
+  it("status:200, should responds with an empty array when article_id exist but without comment", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(0);
       });
   });
 
