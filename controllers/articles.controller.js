@@ -12,9 +12,12 @@ exports.getArticles = (req, res, next) => {
 };
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  articlesModel
-    .getArticlesByIdModel(article_id)
-    .then((article) => {
+  Promise.all([
+    articlesModel.checkArticleExists(article_id),
+    articlesModel.getArticleByIdModel(article_id),
+  ])
+
+    .then(([articleIdList, article]) => {
       res.status(200).send({ article });
     })
     .catch((err) => {
@@ -24,11 +27,10 @@ exports.getArticleById = (req, res, next) => {
 exports.getArticleComments = (req, res, next) => {
   const { article_id } = req.params;
   Promise.all([
-    articlesModel.checkArticleExist(article_id),
+    articlesModel.checkArticleExists(article_id),
     articlesModel.getArticleCommentsModel(article_id),
   ])
-
-    .then(([bool, comments]) => {
+    .then(([articleIdList, comments]) => {
       res.status(200).send({ comments });
     })
     .catch((err) => {

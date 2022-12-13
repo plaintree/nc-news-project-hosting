@@ -15,7 +15,8 @@ describe("3. GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         const { topics } = body;
-        expect(topics).toBeInstanceOf(Array);
+
+        expect(topics).toHaveLength(3);
 
         topics.forEach((topic) => {
           expect(topic).toEqual(
@@ -28,7 +29,7 @@ describe("3. GET /api/topics", () => {
       });
   });
 
-  it("status:404, should responds with error message when the path is invalid", () => {
+  it("status:404, should responds with error message when the path is not found", () => {
     return request(app)
       .get("/api/topicsssssssss")
       .expect(404)
@@ -46,7 +47,8 @@ describe("4. GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toBeInstanceOf(Array);
+
+        expect(articles).toHaveLength(12);
         expect(articles).toBeSorted("created_at", { descending: true });
 
         articles.forEach((article) => {
@@ -65,7 +67,7 @@ describe("4. GET /api/articles", () => {
       });
   });
 
-  it("status:404, should responds with error message when the path is invalid", () => {
+  it("status:404, should responds with error message when the path is not found", () => {
     return request(app)
       .get("/api/articlesssssssss")
       .expect(404)
@@ -95,7 +97,7 @@ describe("5. GET /api/articles/:article_id", () => {
       });
   });
 
-  it("status:404, should responds with error message when the path is invalid", () => {
+  it("status:404, should responds with error message when the path is not found", () => {
     return request(app)
       .get("/api/articlessss/1")
       .expect(404)
@@ -136,7 +138,7 @@ describe("5. GET /api/articles/:article_id", () => {
   });
 });
 
-describe.only("6. GET /api/articles/:article_id/comments", () => {
+describe("6. GET /api/articles/:article_id/comments", () => {
   it("status:200, should responds with an array of comment objects", () => {
     return request(app)
       .get("/api/articles/1/comments")
@@ -144,7 +146,7 @@ describe.only("6. GET /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         const { comments } = body;
 
-        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(11);
         expect(comments).toBeSorted("created_at", { descending: true });
         comments.forEach((comment) => {
           expect(comment).toEqual(
@@ -160,7 +162,7 @@ describe.only("6. GET /api/articles/:article_id/comments", () => {
       });
   });
 
-  it("status:404, should responds with error message when the path is invalid", () => {
+  it("status:404, should responds with error message when the path is not found", () => {
     return request(app)
       .get("/api/articles/1/commentsssssss")
       .expect(404)
@@ -200,3 +202,29 @@ describe.only("6. GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+// describe.only("7. POST /api/articles/:article_id/comments/", () => {
+//   it("status:200, should responds with the new comment objects", () => {
+//     const newPost = {
+//       username: "test-user",
+//       body: "test-body",
+//     };
+//     return request(app)
+//       .post("/api/articles/1/comments")
+//       .send(newPost)
+//       .expect(201)
+//       .then(({ body }) => {
+//         const { comment } = body;
+//         expect(comment).toEqual(
+//           expect.objectContaining({
+//             comment_id: expect.any(Number),
+//             body: expect.any(String),
+//             article_id: 1,
+//             author: expect.any(String),
+//             votes: expect.any(Number),
+//             created_at: expect.any(String),
+//           })
+//         );
+//       });
+//   });
+// });
