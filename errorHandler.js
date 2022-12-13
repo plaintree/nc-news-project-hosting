@@ -6,11 +6,10 @@ exports.customErrorHandler = (err, req, res, next) => {
   } else if (err.code === "23502") {
     res.status(400).send({ msg: "Not Null Violation" });
   } else if (err.code === "23503") {
-    res.status(404).send({ msg: "Not found" });
+    res.status(404).send({ msg: "Not Found" });
   } else if (err.code === "22003") {
-    res.status(400).send({ msg: "Out of range for type integer" });
+    res.status(400).send({ msg: "Out Of Range For Type Integer" });
   } else {
-    console.log(err);
     res.status(500).send({ msg: "Internal Server Error" });
   }
 };

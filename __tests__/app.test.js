@@ -15,7 +15,7 @@ describe("3. GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         const { topics } = body;
-        expect(topics).toBeInstanceOf(Array);
+
         expect(topics).toHaveLength(3);
 
         topics.forEach((topic) => {
@@ -47,7 +47,7 @@ describe("4. GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-        expect(articles).toBeInstanceOf(Array);
+
         expect(articles).toHaveLength(12);
         expect(articles).toBeSorted("created_at", { descending: true });
 
@@ -74,6 +74,66 @@ describe("4. GET /api/articles", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Route not found");
+      });
+  });
+});
+
+describe("5. GET /api/articles/:article_id", () => {
+  it("status:200, should responds with an article object", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toMatchObject({
+          article_id: 1,
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
+          created_at: "2020-07-09T20:11:00.000Z",
+          votes: 100,
+        });
+      });
+  });
+
+  it("status:404, should responds with error message when the path is valid but not found", () => {
+    return request(app)
+      .get("/api/articlessss/1")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Route not found");
+      });
+  });
+
+  it("status:400, should responds with error message when article_id is invalid", () => {
+    return request(app)
+      .get("/api/articles/1e4e")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  it("status:404, should responds with error message when article_id does not exist", () => {
+    return request(app)
+      .get("/api/articles/12345")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Article Not Found");
+      });
+  });
+
+  it("status:400, should responds with error message when article_id is out of range of type integer", () => {
+    return request(app)
+      .get("/api/articles/1234523423432423")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Out Of Range For Type Integer");
       });
   });
 });
