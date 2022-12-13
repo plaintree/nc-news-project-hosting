@@ -5,6 +5,8 @@ const topicsRoute = require("./routes/topics.route");
 const articlesRoute = require("./routes/articles.route");
 const errorHandler = require("./errorHandler");
 
+app.use(express.json());
+
 // Handle topics routes
 app.use("/api/topics", topicsRoute);
 

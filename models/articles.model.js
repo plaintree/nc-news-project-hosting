@@ -32,10 +32,21 @@ exports.getArticleByIdModel = (article_id) => {
 };
 
 exports.getArticleCommentsModel = (article_id) => {
-  SQL = `SELECT comment_id, body, author, votes, created_at
+  let SQL = `SELECT comment_id, body, author, votes, created_at
       FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`;
   return db
     .query(SQL, [article_id])
 
     .then(({ rows }) => rows);
+};
+
+exports.postArticleCommentModel = (newComment, article_id) => {
+  const { username, body } = newComment;
+  let SQL = `INSERT INTO comments (body,article_id, author) 
+      VALUES ($1,$2,$3) 
+      RETURNING *;`;
+  return db
+    .query(SQL, [body, article_id, username])
+
+    .then(({ rows }) => rows[0]);
 };

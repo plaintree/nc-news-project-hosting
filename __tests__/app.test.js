@@ -139,7 +139,7 @@ describe("5. GET /api/articles/:article_id", () => {
 });
 
 describe("6. GET /api/articles/:article_id/comments", () => {
-  it("status:200, should responds with an array of comment objects", () => {
+  it("status:200, should responds with an array of comment objects sorted by most recent comment", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
@@ -159,6 +159,16 @@ describe("6. GET /api/articles/:article_id/comments", () => {
             })
           );
         });
+      });
+  });
+  it("status:200, should responds with an empty array when article_id exist but without comment", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const { comments } = body;
+        expect(comments).toBeInstanceOf(Array);
+        expect(comments).toHaveLength(0);
       });
   });
 
@@ -203,28 +213,102 @@ describe("6. GET /api/articles/:article_id/comments", () => {
   });
 });
 
-// describe.only("7. POST /api/articles/:article_id/comments/", () => {
-//   it("status:200, should responds with the new comment objects", () => {
-//     const newPost = {
-//       username: "test-user",
-//       body: "test-body",
-//     };
-//     return request(app)
-//       .post("/api/articles/1/comments")
-//       .send(newPost)
-//       .expect(201)
-//       .then(({ body }) => {
-//         const { comment } = body;
-//         expect(comment).toEqual(
-//           expect.objectContaining({
-//             comment_id: expect.any(Number),
-//             body: expect.any(String),
-//             article_id: 1,
-//             author: expect.any(String),
-//             votes: expect.any(Number),
-//             created_at: expect.any(String),
-//           })
-//         );
-//       });
-//   });
-// });
+describe.only("7. POST /api/articles/:article_id/comments/", () => {
+  it("status:200, should responds with the new comment objects if user exists", () => {
+    const newPost = {
+      username: "butter_bridge",
+      body: "test body",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newPost)
+      .expect(201)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: expect.any(Number),
+            body: expect.any(String),
+            article_id: 1,
+            author: expect.any(String),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+
+  it("status:404, should responds with error message when user does not exists in database but still post comment", () => {
+    const newPost = {
+      username: "some_random_dude",
+      body: "test body",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newPost)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("User Not Found");
+      });
+  });
+
+  it("status:400, should responds with error message when req body missing some data", () => {
+    const newPost = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newPost)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Not Null Violation");
+      });
+  });
+
+  it("status:400, should responds with error message when article_id is invalid", () => {
+    const newPost = {
+      username: "butter_bridge",
+      body: "test body",
+    };
+    return request(app)
+      .post("/api/articles/54etr4e/comments")
+      .send(newPost)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  it("status:404, should responds with error message when article_id does not exist", () => {
+    const newPost = {
+      username: "butter_bridge",
+      body: "test body",
+    };
+    return request(app)
+      .post("/api/articles/12345/comments")
+      .send(newPost)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Article Not Found");
+      });
+  });
+
+  it("status:400, should responds with error message when article_id is out of range of type integer", () => {
+    const newPost = {
+      username: "butter_bridge",
+      body: "test body",
+    };
+    return request(app)
+      .post("/api/articles/1234523423432423/comments")
+      .send(newPost)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Out Of Range For Type Integer");
+      });
+  });
+});
