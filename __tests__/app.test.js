@@ -16,6 +16,7 @@ describe("3. GET /api/topics", () => {
       .then(({ body }) => {
         const { topics } = body;
         expect(topics).toBeInstanceOf(Array);
+        expect(topics).toHaveLength(3);
 
         topics.forEach((topic) => {
           expect(topic).toEqual(
@@ -47,6 +48,7 @@ describe("4. GET /api/articles", () => {
       .then(({ body }) => {
         const { articles } = body;
         expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(12);
         expect(articles).toBeSorted("created_at", { descending: true });
 
         articles.forEach((article) => {
