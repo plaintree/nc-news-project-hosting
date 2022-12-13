@@ -15,6 +15,7 @@ describe("3. GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         const { topics } = body;
+
         expect(topics).toHaveLength(3);
 
         topics.forEach((topic) => {
@@ -46,6 +47,7 @@ describe("4. GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
+
         expect(articles).toHaveLength(12);
         expect(articles).toBeSorted("created_at", { descending: true });
 
