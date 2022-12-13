@@ -23,9 +23,12 @@ exports.getArticleById = (req, res, next) => {
 };
 exports.getArticleComments = (req, res, next) => {
   const { article_id } = req.params;
-  articlesModel
-    .getArticleCommentsModel(article_id)
-    .then((comments) => {
+  Promise.all([
+    articlesModel.checkArticleExist(article_id),
+    articlesModel.getArticleCommentsModel(article_id),
+  ])
+
+    .then(([bool, comments]) => {
       res.status(200).send({ comments });
     })
     .catch((err) => {
