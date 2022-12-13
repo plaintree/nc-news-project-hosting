@@ -12,9 +12,12 @@ exports.getArticles = (req, res, next) => {
 };
 exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  articlesModel
-    .getArticlesByIdModel(article_id)
-    .then((article) => {
+  Promise.all([
+    articlesModel.checkArticleExists(article_id),
+    articlesModel.getArticleByIdModel(article_id),
+  ])
+
+    .then(([articleIdList, article]) => {
       res.status(200).send({ article });
     })
     .catch((err) => {

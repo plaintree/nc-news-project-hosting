@@ -97,7 +97,7 @@ describe("5. GET /api/articles/:article_id", () => {
       });
   });
 
-  it("status:404, should responds with error message when the path is invalid", () => {
+  it("status:404, should responds with error message when the path is valid but not found", () => {
     return request(app)
       .get("/api/articlessss/1")
       .expect(404)

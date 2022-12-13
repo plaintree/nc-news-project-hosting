@@ -10,7 +10,6 @@ exports.customErrorHandler = (err, req, res, next) => {
   } else if (err.code === "22003") {
     res.status(400).send({ msg: "Out Of Range For Type Integer" });
   } else {
-    console.log(err);
     res.status(500).send({ msg: "Internal Server Error" });
   }
 };
