@@ -13,9 +13,10 @@ Your database will be PSQL, and you will interact with it using [node-postgres](
 3. express
 4. jest (dev-dependencies)
 5. jest-extended (dev-dependencies)
-6. supertest (dev-dependencies)
-7. pg-format (dev-dependencies)
-8. husky (dev-dependencies)
+6. jest-sorted (dev-dependencies)
+7. supertest (dev-dependencies)
+8. pg-format (dev-dependencies)
+9. husky (dev-dependencies)
 
 ## Environmental Variables
 
