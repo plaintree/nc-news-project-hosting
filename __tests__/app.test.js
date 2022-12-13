@@ -213,7 +213,7 @@ describe("6. GET /api/articles/:article_id/comments", () => {
   });
 });
 
-describe.only("7. POST /api/articles/:article_id/comments/", () => {
+describe("7. POST /api/articles/:article_id/comments/", () => {
   it("status:200, should responds with the new comment objects if user exists", () => {
     const newPost = {
       username: "butter_bridge",
