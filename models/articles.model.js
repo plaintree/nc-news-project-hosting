@@ -33,6 +33,7 @@ exports.getArticleByIdModel = (article_id) => {
 
 exports.getArticleCommentsModel = (article_id) => {
   let SQL = `SELECT comment_id, body, author, votes, created_at
+
       FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`;
   return db
     .query(SQL, [article_id])
