@@ -2,9 +2,12 @@ const articlesModel = require("../models/articles.model");
 const usersModel = require("../models/users.model");
 
 exports.getArticles = (req, res, next) => {
-  articlesModel
-    .getArticlesModel()
-    .then((articles) => {
+  const { sort_by, order, topic } = req.query;
+  Promise.all([
+    articlesModel.checkArticleQueryExists(req.query),
+    articlesModel.getArticlesModel(sort_by, order, topic),
+  ])
+    .then(([bool, articles]) => {
       res.status(200).send({ articles });
     })
     .catch((err) => {

@@ -468,3 +468,130 @@ describe("9. GET /api/users", () => {
       });
   });
 });
+
+describe("10. GET /api/articles (queries)", () => {
+  it("status:200, should responds with an array of articles with 'sort_by' only query with default descending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSorted("author", { descending: true });
+
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it("status:200, should responds with an array of articles with 'topic' only query with default descending order of date", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(11);
+        expect(articles).toBeSorted("created_at", { descending: true });
+
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it("status:200, should responds with an array of articles with 'sort_by' and 'topic' queries with default descending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(11);
+        expect(articles).toBeSorted("author", { descending: true });
+
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it("status:200, should responds with an array of articles with 'sort_by' and 'topic' queries with ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title&topic=mitch&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(11);
+        expect(articles).toBeSorted("title");
+
+        articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
+      });
+  });
+  it("status:200, should responds with an empty array when 'topic' query is valid but does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=you_are_beautiful")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toBeInstanceOf(Array);
+        expect(articles).toHaveLength(0);
+      });
+  });
+  it("status:400, should responds with error message when 'sort_by' or 'order' query is invalid", () => {
+    return request(app)
+      .get("/api/articles?sort_by=we_do_not_exist&order=assscending")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("status:400, should responds with error message when the query key is invalid", () => {
+    return request(app)
+      .get("/api/articles?sort_byyyyyyyy=author&topic=mitch")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+});
