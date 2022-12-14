@@ -1,4 +1,5 @@
 const articlesModel = require("../models/articles.model");
+const usersModel = require("../models/users.model");
 
 exports.getArticles = (req, res, next) => {
   articlesModel
@@ -32,6 +33,23 @@ exports.getArticleComments = (req, res, next) => {
   ])
     .then(([articleIdList, comments]) => {
       res.status(200).send({ comments });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+exports.postArticleComment = (req, res, next) => {
+  const {
+    body,
+    params: { article_id },
+  } = req;
+  Promise.all([
+    articlesModel.checkArticleExists(article_id),
+    usersModel.checkUserExists(body.username),
+    articlesModel.postArticleCommentModel(body, article_id),
+  ])
+    .then(([article_id, username, comment]) => {
+      res.status(201).send({ comment });
     })
     .catch((err) => {
       next(err);

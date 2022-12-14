@@ -7,4 +7,6 @@ router.get("/", articlesController.getArticles);
 router.get("/:article_id", articlesController.getArticleById);
 router.get("/:article_id/comments", articlesController.getArticleComments);
 
+router.post("/:article_id/comments", articlesController.postArticleComment);
+
 module.exports = router;
