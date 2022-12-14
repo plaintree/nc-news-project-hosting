@@ -15,7 +15,6 @@ describe("3. GET /api/topics", () => {
       .expect(200)
       .then(({ body }) => {
         const { topics } = body;
-
         expect(topics).toHaveLength(3);
 
         topics.forEach((topic) => {
@@ -47,7 +46,6 @@ describe("4. GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         const { articles } = body;
-
         expect(articles).toHaveLength(12);
         expect(articles).toBeSorted("created_at", { descending: true });
 
@@ -238,7 +236,7 @@ describe("7. POST /api/articles/:article_id/comments/", () => {
       });
   });
 
-  it("status:404, should responds with error message when user does not exists in database but still post comment", () => {
+  it("status:404, should responds with error message when user does not exists in database but still trying to post comment", () => {
     const newPost = {
       username: "some_random_dude",
       body: "test body",
@@ -263,7 +261,7 @@ describe("7. POST /api/articles/:article_id/comments/", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Not Null Violation");
+        expect(msg).toBe("Malformed Request Body");
       });
   });
 
@@ -305,6 +303,132 @@ describe("7. POST /api/articles/:article_id/comments/", () => {
     return request(app)
       .post("/api/articles/1234523423432423/comments")
       .send(newPost)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Out Of Range For Type Integer");
+      });
+  });
+});
+
+describe("8. PATCH /api/articles/:article_id", () => {
+  it("status:200, should responds with the update article vote when inc_votes is positive", () => {
+    const patchVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(patchVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 101,
+          })
+        );
+      });
+  });
+  it("status:200, should responds with the update article vote when inc_votes is negative", () => {
+    const patchVote = { inc_votes: -10 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(patchVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 90,
+          })
+        );
+      });
+  });
+  it("status:200, should responds with the unchanged article vote when inc_votes is zero", () => {
+    const patchVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(patchVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { article } = body;
+
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: 1,
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            votes: 100,
+          })
+        );
+      });
+  });
+  it("status:400, should responds with error message vote when inc_votes is invalid", () => {
+    const patchVote = { inc_votes: "yo_check_this_out" };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(patchVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("status:400, should responds with error message vote when 'inc_votes' key is missing", () => {
+    const patchVote = { inc_votesss: 10 };
+    return request(app)
+      .patch("/api/articles/1")
+      .send(patchVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Malformed Request Body");
+      });
+  });
+  it("status:400, should responds with error message when article_id is invalid", () => {
+    const patchVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/articles/1r4r")
+      .send(patchVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  it("status:404, should responds with error message when article_id does not exist", () => {
+    const patchVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/articles/123")
+      .send(patchVote)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Article Not Found");
+      });
+  });
+
+  it("status:400, should responds with error message when article_id is out of range of type integer", () => {
+    const patchVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/articles/1234523423432423")
+      .send(patchVote)
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;

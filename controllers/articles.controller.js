@@ -55,3 +55,19 @@ exports.postArticleComment = (req, res, next) => {
       next(err);
     });
 };
+exports.patchArticleById = (req, res, next) => {
+  const {
+    body: { inc_votes },
+    params: { article_id },
+  } = req;
+  Promise.all([
+    articlesModel.checkArticleExists(article_id),
+    articlesModel.patchArticleByIdModel(inc_votes, article_id),
+  ])
+    .then(([article_id, article]) => {
+      res.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
