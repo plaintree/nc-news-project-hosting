@@ -468,3 +468,40 @@ describe("9. GET /api/users", () => {
       });
   });
 });
+
+describe("12. DELETE /api/comments/:comment_id", () => {
+  it("status:204, should delete a comment with a valid comment_id", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+
+  it("status:400, should responds with error message when article_id is invalid", () => {
+    return request(app)
+      .delete("/api/comments/1e4e")
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  it("status:404, should responds with error message when article_id does not exist", () => {
+    return request(app)
+      .delete("/api/comments/12345")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Comment Not Found");
+      });
+  });
+
+  it("status:400, should responds with error message when comment_id is out of range of type integer", () => {
+    return request(app)
+      .delete("/api/comments/1234523423432423")
+      .expect(400)
+      .then(({ body }) => {
+        console.log(body);
+        const { msg } = body;
+        expect(msg).toBe("Out Of Range For Type Integer");
+      });
+  });
+});
