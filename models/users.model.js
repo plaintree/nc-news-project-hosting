@@ -4,11 +4,17 @@ exports.checkUserExists = (username) => {
   let SQL = `SELECT username FROM users;`;
   return db.query(SQL).then(({ rows }) => {
     const usernameArray = rows.map((user) => user.username);
-    if (!usernameArray.includes(username)) {
+    const isExist = rows.some((user) => user.username === username);
+    if (!isExist) {
       return Promise.reject({
         status: 404,
         msg: "User Not Found",
       });
-    } else return Promise.resolve(rows);
+    }
   });
+};
+
+exports.getUsersModel = () => {
+  let SQL = `SELECT * FROM users`;
+  return db.query(SQL).then(({ rows }) => rows);
 };

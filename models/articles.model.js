@@ -19,7 +19,7 @@ exports.checkArticleExists = (article_id) => {
     const articleIdArray = articleIdList.map((article) => +article.article_id);
     if (!articleIdArray.includes(+article_id) && article_id <= 2147483647) {
       return Promise.reject({ status: 404, msg: "Article Not Found" });
-    } else return Promise.resolve(articleIdList);
+    }
   });
 };
 

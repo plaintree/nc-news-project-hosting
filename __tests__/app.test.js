@@ -238,7 +238,7 @@ describe("7. POST /api/articles/:article_id/comments/", () => {
       });
   });
 
-  it("status:404, should responds with error message when user does not exists in database but still post comment", () => {
+  it("status:404, should responds with error message when user does not exists in database but still trying to post comment", () => {
     const newPost = {
       username: "some_random_dude",
       body: "test body",
@@ -263,7 +263,7 @@ describe("7. POST /api/articles/:article_id/comments/", () => {
       .expect(400)
       .then(({ body }) => {
         const { msg } = body;
-        expect(msg).toBe("Not Null Violation");
+        expect(msg).toBe("Misformed Request Body");
       });
   });
 
@@ -309,6 +309,38 @@ describe("7. POST /api/articles/:article_id/comments/", () => {
       .then(({ body }) => {
         const { msg } = body;
         expect(msg).toBe("Out Of Range For Type Integer");
+      });
+  });
+});
+
+describe("9. GET /api/users", () => {
+  it("status:200, should responds with an array of topics", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        const { users } = body;
+        expect(users).toHaveLength(4);
+
+        users.forEach((topic) => {
+          expect(topic).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+
+  it("status:404, should responds with error message when the path is invalid", () => {
+    return request(app)
+      .get("/api/usersssssssss")
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Route not found");
       });
   });
 });
