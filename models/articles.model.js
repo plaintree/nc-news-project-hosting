@@ -19,7 +19,7 @@ exports.checkArticleExists = (article_id) => {
     const articleIdArray = articleIdList.map((article) => +article.article_id);
     if (!articleIdArray.includes(+article_id) && article_id <= 2147483647) {
       return Promise.reject({ status: 404, msg: "Article Not Found" });
-    } else return Promise.resolve(articleIdList);
+    }
   });
 };
 
@@ -33,7 +33,6 @@ exports.getArticleByIdModel = (article_id) => {
 
 exports.getArticleCommentsModel = (article_id) => {
   let SQL = `SELECT comment_id, body, author, votes, created_at
-
       FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`;
   return db
     .query(SQL, [article_id])
@@ -48,6 +47,16 @@ exports.postArticleCommentModel = (newComment, article_id) => {
       RETURNING *;`;
   return db
     .query(SQL, [body, article_id, username])
+
+    .then(({ rows }) => rows[0]);
+};
+
+exports.patchArticleByIdModel = (voteCount, article_id) => {
+  let SQL = `UPDATE articles SET votes = votes + $1 
+      WHERE article_id = $2
+      RETURNING *;`;
+  return db
+    .query(SQL, [voteCount, article_id])
 
     .then(({ rows }) => rows[0]);
 };
