@@ -657,7 +657,6 @@ describe("12. DELETE /api/comments/:comment_id", () => {
       .delete("/api/comments/1234523423432423")
       .expect(400)
       .then(({ body }) => {
-        console.log(body);
         const { msg } = body;
         expect(msg).toBe("Out Of Range For Type Integer");
       });
