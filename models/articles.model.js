@@ -1,16 +1,73 @@
 const db = require("../db/connection");
 
-exports.getArticlesModel = () => {
+exports.getArticlesModel = (sort_by = "date", order = "desc", topic) => {
   let SQL = `SELECT articles.author, title, articles.article_id, 
   topic, articles.created_at, articles.votes, 
   COUNT(comments.article_id):: INTEGER AS comment_count
   FROM articles
-  LEFT JOIN comments ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC
-  ;
+  LEFT JOIN comments ON articles.article_id = comments.article_id 
   `;
-  return db.query(SQL).then(({ rows }) => rows);
+
+  const queryValues = [];
+
+  const validSortBy = [
+    "article_id",
+    "author",
+    "title",
+    "topic",
+    "date",
+    "votes",
+    "comment_count",
+  ];
+  const validOrder = ["asc", "desc"];
+
+  if (!validSortBy.includes(sort_by) || !validOrder.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
+  }
+
+  if (topic !== undefined) {
+    SQL += ` WHERE topic = $1 GROUP BY articles.article_id`;
+    queryValues.push(topic);
+  } else {
+    SQL += ` GROUP BY articles.article_id`;
+  }
+
+  if (sort_by === "date") {
+    SQL += ` ORDER BY articles.created_at`;
+  } else {
+    SQL += ` ORDER BY articles.${sort_by}`;
+  }
+
+  if (order === "asc") {
+    SQL += ` ASC;`;
+  } else {
+    SQL += ` DESC;`;
+  }
+
+  return db.query(SQL, queryValues).then(({ rows }) => rows);
+};
+
+exports.checkTopicExists = (topicQuery) => {
+  let SQL = `SELECT * FROM topics;`;
+  return db.query(SQL).then(({ rows }) => {
+    const isExist = rows.some((topic) => topic.slug === topicQuery);
+    if (!isExist && topicQuery !== undefined) {
+      return Promise.reject({ status: 404, msg: "Topic Not Found" });
+    }
+  });
+};
+
+exports.checkArticleQueryExists = (reqQuery) => {
+  const queryArray = Object.keys(reqQuery);
+  const validQuery = ["sort_by", "topic", "order"];
+  return new Promise((resolve, reject) => {
+    if (queryArray.length === 0) return resolve(true);
+    queryArray.forEach((query) => {
+      if (!validQuery.includes(query)) {
+        return reject({ status: 400, msg: "Bad Request" });
+      } else return resolve(true);
+    });
+  });
 };
 
 exports.checkArticleExists = (article_id) => {
