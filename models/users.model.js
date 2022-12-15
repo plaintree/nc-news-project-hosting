@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 
 exports.checkUserExists = (username) => {
-  let SQL = `SELECT username FROM users;`;
+  const SQL = `SELECT username FROM users;`;
   return db.query(SQL).then(({ rows }) => {
     const isExist = rows.some((user) => user.username === username);
     if (!isExist) {
@@ -14,6 +14,6 @@ exports.checkUserExists = (username) => {
 };
 
 exports.getUsersModel = () => {
-  let SQL = `SELECT * FROM users`;
+  const SQL = `SELECT * FROM users`;
   return db.query(SQL).then(({ rows }) => rows);
 };
