@@ -614,7 +614,7 @@ describe("10. GET /api/articles (queries)", () => {
   });
 });
 
-describe.only("13. GET /api", () => {
+describe("13. GET /api", () => {
   it("status:200, should responds with an array of topics", () => {
     return request(app)
       .get("/api")
