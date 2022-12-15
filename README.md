@@ -37,12 +37,13 @@ Enter `PGDATABASE=nc_news_test` in `.env.test` directory while `PGDATABASE=nc_ne
 
 ## Instruction on running test and seeding the local database
 
-1. Make sure your local machine reach the minimum requirement and all the npm packages are installed.
-2. Start up PostgreSQL in your local machine.
-3. Add the required `.env` files at the root directory.
-4. Go to the terminal and input `$npm run setup-dbs`.
-5. Input `$npm run seed` to seed your database
-6. Input `$npm test` to check if the test suites running with passed test.
-7. If error message is shown in the terminal, try to troubleshoot it and see if all the packages are installed correctly.
+1. Make sure your local machine reach the minimum requirement.
+2. Go to the terminal and input `$ npm install` to install the npm packages.
+3. Start up PostgreSQL in your local machine.
+4. Add the required `.env` files at the root directory.
+5. Input `$ npm run setup-dbs`.
+6. Input `$ npm run seed` to seed your database
+7. Input `$ npm test` to check if the test suites running with passed test.
+8. If error message is shown in the terminal, try to troubleshoot it and see if all the packages are installed correctly.
 
 If you have any difficulties, please report to the developer (or simply Google it).
