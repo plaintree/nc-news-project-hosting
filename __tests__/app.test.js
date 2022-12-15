@@ -657,9 +657,26 @@ describe("12. DELETE /api/comments/:comment_id", () => {
       .delete("/api/comments/1234523423432423")
       .expect(400)
       .then(({ body }) => {
-        console.log(body);
         const { msg } = body;
         expect(msg).toBe("Out Of Range For Type Integer");
+      });
+  });
+});
+
+describe("13. GET /api", () => {
+  it("status:200, should responds with an array of topics", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        const { pathInfo } = body;
+        expect(pathInfo).toEqual(
+          expect.objectContaining({
+            "GET /api": expect.any(Object),
+            "GET /api/topics": expect.any(Object),
+            "GET /api/articles": expect.any(Object),
+          })
+        );
       });
   });
 });

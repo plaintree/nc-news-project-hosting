@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 
+const apiRoute = require("./routes/api.route");
 const topicsRoute = require("./routes/topics.route");
 const articlesRoute = require("./routes/articles.route");
 const usersRoute = require("./routes/users.route");
@@ -8,6 +9,9 @@ const commentsRoute = require("./routes/comments.route");
 const errorHandler = require("./errorHandler");
 
 app.use(express.json());
+
+// Handle api routes
+app.use("/api", apiRoute);
 
 // Handle topics routes
 app.use("/api/topics", topicsRoute);
