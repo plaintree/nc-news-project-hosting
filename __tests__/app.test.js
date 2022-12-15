@@ -669,8 +669,8 @@ describe("13. GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        const { data } = body;
-        expect(data).toEqual(
+        const { pathInfo } = body;
+        expect(pathInfo).toEqual(
           expect.objectContaining({
             "GET /api": expect.any(Object),
             "GET /api/topics": expect.any(Object),
