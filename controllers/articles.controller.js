@@ -5,9 +5,10 @@ exports.getArticles = (req, res, next) => {
   const { sort_by, order, topic } = req.query;
   Promise.all([
     articlesModel.checkArticleQueryExists(req.query),
+    articlesModel.checkTopicExists(topic),
     articlesModel.getArticlesModel(sort_by, order, topic),
   ])
-    .then(([bool, articles]) => {
+    .then(([articleBool, topicBool, articles]) => {
       res.status(200).send({ articles });
     })
     .catch((err) => {

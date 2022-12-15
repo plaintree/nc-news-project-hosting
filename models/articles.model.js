@@ -57,6 +57,16 @@ exports.getArticlesModel = (sort_by = "date", order = "desc", topic) => {
   return db.query(SQL, queryValues).then(({ rows }) => rows);
 };
 
+exports.checkTopicExists = (topicQuery) => {
+  let SQL = `SELECT * FROM topics;`;
+  return db.query(SQL).then(({ rows }) => {
+    const isExist = rows.some((topic) => topic.slug === topicQuery);
+    if (!isExist && topicQuery !== undefined) {
+      return Promise.reject({ status: 404, msg: "Topic Not Found" });
+    }
+  });
+};
+
 exports.checkArticleQueryExists = (reqQuery) => {
   const queryArray = Object.keys(reqQuery);
   const validQuery = ["sort_by", "topic", "order"];
