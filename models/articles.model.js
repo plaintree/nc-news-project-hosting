@@ -32,20 +32,10 @@ exports.getArticlesModel = (sort_by = "date", order = "desc", topic) => {
     SQL += ` GROUP BY articles.article_id`;
   }
 
-  if (sort_by === "article_id") {
-    SQL += ` ORDER BY articles.article_id`;
-  } else if (sort_by === "author") {
-    SQL += ` ORDER BY articles.author`;
-  } else if (sort_by === "title") {
-    SQL += ` ORDER BY title`;
-  } else if (sort_by === "topic") {
-    SQL += ` ORDER BY topic`;
-  } else if (sort_by === "comment_count") {
-    SQL += ` ORDER BY comment_count`;
-  } else if (sort_by === "votes") {
-    SQL += ` ORDER BY votes`;
-  } else {
+  if (sort_by === "date") {
     SQL += ` ORDER BY articles.created_at`;
+  } else {
+    SQL += ` ORDER BY articles.${sort_by}`;
   }
 
   if (order === "asc") {
@@ -72,8 +62,8 @@ exports.checkArticleQueryExists = (reqQuery) => {
   const validQuery = ["sort_by", "topic", "order"];
   return new Promise((resolve, reject) => {
     if (queryArray.length === 0) return resolve(true);
-    queryArray.forEach((q) => {
-      if (!validQuery.includes(q)) {
+    queryArray.forEach((query) => {
+      if (!validQuery.includes(query)) {
         return reject({ status: 400, msg: "Bad Request" });
       } else return resolve(true);
     });
