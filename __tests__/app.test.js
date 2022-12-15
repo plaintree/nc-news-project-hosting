@@ -670,34 +670,12 @@ describe("13. GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        expect(body).toEqual(
+        const { data } = body;
+        expect(data).toEqual(
           expect.objectContaining({
-            "GET /api": {
-              description:
-                "serves up a json representation of all the available endpoints of the api",
-            },
-            "GET /api/topics": {
-              description: "serves an array of all topics",
-              queries: [],
-              exampleResponse: {
-                topics: [{ slug: "football", description: "Footie!" }],
-              },
-            },
-            "GET /api/articles": {
-              description: "serves an array of all topics",
-              queries: ["author", "topic", "sort_by", "order"],
-              exampleResponse: {
-                articles: [
-                  {
-                    title: "Seafood substitutions are increasing",
-                    topic: "cooking",
-                    author: "weegembump",
-                    body: "Text from the article..",
-                    created_at: 1527695953341,
-                  },
-                ],
-              },
-            },
+            "GET /api": expect.any(Object),
+            "GET /api/topics": expect.any(Object),
+            "GET /api/articles": expect.any(Object),
           })
         );
       });
