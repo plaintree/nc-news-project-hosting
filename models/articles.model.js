@@ -48,7 +48,7 @@ exports.getArticlesModel = (sort_by = "date", order = "desc", topic) => {
 };
 
 exports.checkTopicExists = (topicQuery) => {
-  let SQL = `SELECT * FROM topics;`;
+  const SQL = `SELECT * FROM topics;`;
   return db.query(SQL).then(({ rows }) => {
     const isExist = rows.some((topic) => topic.slug === topicQuery);
     if (!isExist && topicQuery !== undefined) {
@@ -71,7 +71,7 @@ exports.checkArticleQueryExists = (reqQuery) => {
 };
 
 exports.checkArticleExists = (article_id) => {
-  let SQL = `SELECT article_id FROM articles;`;
+  const SQL = `SELECT article_id FROM articles;`;
   return db.query(SQL).then(({ rows: articleIdList }) => {
     const articleIdArray = articleIdList.map((article) => +article.article_id);
     if (!articleIdArray.includes(+article_id) && article_id <= 2147483647) {
@@ -81,7 +81,15 @@ exports.checkArticleExists = (article_id) => {
 };
 
 exports.getArticleByIdModel = (article_id) => {
-  let SQL = `SELECT * FROM articles WHERE article_id = $1;`;
+  const SQL = `SELECT articles.article_id, articles.author, title, 
+  topic, articles.author, articles.body, articles.created_at, articles.votes, 
+  COUNT(comments.article_id):: INTEGER AS comment_count
+  FROM articles
+  LEFT JOIN comments ON articles.article_id = comments.article_id
+  WHERE articles.article_id = $1
+  GROUP BY articles.article_id
+  ;
+  `;
   return db
     .query(SQL, [article_id])
 
@@ -89,7 +97,7 @@ exports.getArticleByIdModel = (article_id) => {
 };
 
 exports.getArticleCommentsModel = (article_id) => {
-  let SQL = `SELECT comment_id, body, author, votes, created_at
+  const SQL = `SELECT comment_id, body, author, votes, created_at
       FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`;
   return db
     .query(SQL, [article_id])
@@ -99,7 +107,7 @@ exports.getArticleCommentsModel = (article_id) => {
 
 exports.postArticleCommentModel = (newComment, article_id) => {
   const { username, body } = newComment;
-  let SQL = `INSERT INTO comments (body,article_id, author) 
+  const SQL = `INSERT INTO comments (body,article_id, author) 
       VALUES ($1,$2,$3) 
       RETURNING *;`;
   return db
@@ -109,7 +117,7 @@ exports.postArticleCommentModel = (newComment, article_id) => {
 };
 
 exports.patchArticleByIdModel = (voteCount, article_id) => {
-  let SQL = `UPDATE articles SET votes = votes + $1 
+  const SQL = `UPDATE articles SET votes = votes + $1 
       WHERE article_id = $2
       RETURNING *;`;
   return db
