@@ -681,7 +681,7 @@ describe("13. GET /api", () => {
   });
 });
 
-describe.only("17. GET /api/users/:username", () => {
+describe("17. GET /api/users/:username", () => {
   it("status:200, should responds with an user objects with existing username", () => {
     return request(app)
       .get("/api/users/butter_bridge")
