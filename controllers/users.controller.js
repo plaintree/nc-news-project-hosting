@@ -10,3 +10,15 @@ exports.getUsers = (req, res, next) => {
       next(err);
     });
 };
+exports.getUserByUsername = (req, res, next) => {
+  const { username } = req.params;
+  Promise.all([
+    usersModel.checkUserExists(username),
+    usersModel.getUserByUsernameModel(username),
+  ])
+
+    .then(([bool, user]) => {
+      res.status(200).send({ user });
+    })
+    .catch(next);
+};

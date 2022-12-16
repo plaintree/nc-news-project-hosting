@@ -17,3 +17,8 @@ exports.getUsersModel = () => {
   const SQL = `SELECT * FROM users`;
   return db.query(SQL).then(({ rows }) => rows);
 };
+
+exports.getUserByUsernameModel = (username) => {
+  const SQL = `SELECT * FROM users WHERE username = $1`;
+  return db.query(SQL, [username]).then(({ rows }) => rows[0]);
+};
