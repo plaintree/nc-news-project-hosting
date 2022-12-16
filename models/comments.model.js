@@ -13,6 +13,13 @@ exports.checkCommentExists = (commentId) => {
   });
 };
 
+exports.patchCommentModel = (voteCount, commentId) => {
+  const SQL = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *;`;
+  return db.query(SQL, [voteCount, commentId]).then((data) => {
+    return data.rows[0];
+  });
+};
+
 exports.deleteCommentModel = (commentId) => {
   const SQL = `DELETE FROM comments WHERE comment_id = $1 RETURNING *;`;
   return db.query(SQL, [commentId]).then((data) => {

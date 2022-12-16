@@ -709,3 +709,123 @@ describe("17. GET /api/users/:username", () => {
       });
   });
 });
+
+describe("18. PATCH /api/comments/:comment_id", () => {
+  it("status:200, should responds with the update comment vote when inc_votes is positive", () => {
+    const patchVote = { inc_votes: 1 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(patchVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: 1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            votes: 17,
+            author: "butter_bridge",
+            article_id: 9,
+            created_at: "2020-04-06T12:17:00.000Z",
+          })
+        );
+      });
+  });
+  it("status:200, should responds with the update comment vote when inc_votes is negative", () => {
+    const patchVote = { inc_votes: -10 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(patchVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: 1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            votes: 6,
+            author: "butter_bridge",
+            article_id: 9,
+            created_at: "2020-04-06T12:17:00.000Z",
+          })
+        );
+      });
+  });
+  it("status:200, should responds with the unchanged comment vote when inc_votes is zero", () => {
+    const patchVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(patchVote)
+      .expect(200)
+      .then(({ body }) => {
+        const { comment } = body;
+        expect(comment).toEqual(
+          expect.objectContaining({
+            comment_id: 1,
+            body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+            votes: 16,
+            author: "butter_bridge",
+            article_id: 9,
+            created_at: "2020-04-06T12:17:00.000Z",
+          })
+        );
+      });
+  });
+  it("status:400, should responds with error message when inc_votes is invalid", () => {
+    const patchVote = { inc_votes: "yo_check_this_out" };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(patchVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+  it("status:400, should responds with error message when 'inc_votes' key is missing", () => {
+    const patchVote = { inc_votesss: 10 };
+    return request(app)
+      .patch("/api/comments/1")
+      .send(patchVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Malformed Request Body");
+      });
+  });
+  it("status:400, should responds with error message when comments_id is invalid", () => {
+    const patchVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/comments/1r4r")
+      .send(patchVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Bad Request");
+      });
+  });
+
+  it("status:404, should responds with error message when comment_id does not exist", () => {
+    const patchVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/comments/123")
+      .send(patchVote)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Comment Not Found");
+      });
+  });
+
+  it("status:400, should responds with error message when comment_id is out of range of type integer", () => {
+    const patchVote = { inc_votes: 0 };
+    return request(app)
+      .patch("/api/comments/1234523423432423")
+      .send(patchVote)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Out Of Range For Type Integer");
+      });
+  });
+});
