@@ -1,11 +1,12 @@
 const articlesModel = require("../models/articles.model");
 const usersModel = require("../models/users.model");
+const topicsModel = require("../models/topics.model");
 
 exports.getArticles = (req, res, next) => {
   const { sort_by, order, topic } = req.query;
   Promise.all([
     articlesModel.checkArticleQueryExists(req.query),
-    articlesModel.checkTopicExists(topic),
+    topicsModel.checkTopicExists(topic),
     articlesModel.getArticlesModel(sort_by, order, topic),
   ])
     .then(([articleBool, topicBool, articles]) => {
@@ -58,6 +59,18 @@ exports.postArticleComment = (req, res, next) => {
     .catch((err) => {
       next(err);
     });
+};
+exports.postArticle = (req, res, next) => {
+  const { body } = req;
+  Promise.all([
+    usersModel.checkUserExists(body.author),
+    topicsModel.checkTopicExists(body.topic),
+    articlesModel.postArticleModel(body),
+  ])
+    .then(([userBool, topicBool, article]) => {
+      res.status(201).send({ article });
+    })
+    .catch(next);
 };
 exports.patchArticleById = (req, res, next) => {
   const {

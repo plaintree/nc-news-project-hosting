@@ -829,3 +829,82 @@ describe("18. PATCH /api/comments/:comment_id", () => {
       });
   });
 });
+
+describe("19. POST /api/articles", () => {
+  it("status:201, should responds with the new article object if user and topic exist", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      body: "test body",
+      title: "test title",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(201)
+      .then(({ body }) => {
+        const { article } = body;
+        expect(article).toEqual(
+          expect.objectContaining({
+            article_id: expect.any(Number),
+            comment_count: expect.any(Number),
+            author: "butter_bridge",
+            body: "test body",
+            title: "test title",
+            topic: "mitch",
+            votes: 0,
+            created_at: expect.any(String),
+          })
+        );
+      });
+  });
+
+  it("status:404, should responds with error message when user does not exists in database but still trying to post comment", () => {
+    const newArticle = {
+      author: "some_random_dude",
+      body: "test body",
+      title: "test title",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("User Not Found");
+      });
+  });
+  it("status:404, should responds with error message when topic does not exists in database", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      body: "test body",
+      title: "test title",
+      topic: "mitchy",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(404)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Topic Not Found");
+      });
+  });
+
+  it("status:400, should responds with error message when req body missing some data", () => {
+    const newArticle = {
+      author: "butter_bridge",
+      body: "test body",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(newArticle)
+      .expect(400)
+      .then(({ body }) => {
+        const { msg } = body;
+        expect(msg).toBe("Malformed Request Body");
+      });
+  });
+});

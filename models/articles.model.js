@@ -47,16 +47,6 @@ exports.getArticlesModel = (sort_by = "date", order = "desc", topic) => {
   return db.query(SQL, queryValues).then(({ rows }) => rows);
 };
 
-exports.checkTopicExists = (topicQuery) => {
-  const SQL = `SELECT * FROM topics;`;
-  return db.query(SQL).then(({ rows }) => {
-    const isExist = rows.some((topic) => topic.slug === topicQuery);
-    if (!isExist && topicQuery !== undefined) {
-      return Promise.reject({ status: 404, msg: "Topic Not Found" });
-    }
-  });
-};
-
 exports.checkArticleQueryExists = (reqQuery) => {
   const queryArray = Object.keys(reqQuery);
   const validQuery = ["sort_by", "topic", "order"];
@@ -123,5 +113,26 @@ exports.patchArticleByIdModel = (voteCount, article_id) => {
   return db
     .query(SQL, [voteCount, article_id])
 
+    .then(({ rows }) => rows[0]);
+};
+
+exports.postArticleModel = (newComment) => {
+  const { author, body, title, topic } = newComment;
+  const SQL = `INSERT INTO articles (title,topic, author, body) 
+      VALUES ($1,$2,$3,$4) 
+      RETURNING *;`;
+  return db
+    .query(SQL, [title, topic, author, body])
+
+    .then(({ rows }) => {
+      return db.query(`SELECT articles.article_id, articles.author, title, 
+      topic, articles.author, articles.body, articles.created_at, articles.votes, 
+      COUNT(comments.article_id):: INTEGER AS comment_count
+      FROM articles
+      LEFT JOIN comments ON articles.article_id = comments.article_id
+      WHERE articles.article_id = ${rows[0].article_id}
+      GROUP BY articles.article_id
+      ;`);
+    })
     .then(({ rows }) => rows[0]);
 };
