@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 
 const apiRoute = require("./routes/api.route");
 const topicsRoute = require("./routes/topics.route");
@@ -9,6 +10,7 @@ const commentsRoute = require("./routes/comments.route");
 const errorHandler = require("./errorHandler");
 
 app.use(express.json());
+app.use(cors());
 
 // Handle api routes
 app.use("/api", apiRoute);
