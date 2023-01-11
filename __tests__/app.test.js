@@ -507,6 +507,18 @@ describe("10. GET /api/articles (queries)", () => {
         });
       });
   });
+
+  it("status:200, should responds with an article array with 'sort_by' is 'comment_count' in descending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count")
+      .expect(200)
+      .then(({ body }) => {
+        const { articles } = body;
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSorted("comment_count", { descending: true });
+      });
+  });
+
   it("status:200, should responds with an array of articles with 'topic' only query with default descending order of date", () => {
     return request(app)
       .get("/api/articles?topic=mitch")
@@ -589,6 +601,7 @@ describe("10. GET /api/articles (queries)", () => {
         expect(articles).toHaveLength(0);
       });
   });
+
   it("status:404, should responds with an error message when 'topic' query does not exist", () => {
     return request(app)
       .get("/api/articles?topic=you_are_beautiful")

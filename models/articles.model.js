@@ -34,6 +34,8 @@ exports.getArticlesModel = (sort_by = "date", order = "desc", topic) => {
 
   if (sort_by === "date") {
     SQL += ` ORDER BY articles.created_at`;
+  } else if (sort_by === "comment_count") {
+    SQL += ` ORDER BY comment_count`;
   } else {
     SQL += ` ORDER BY articles.${sort_by}`;
   }
